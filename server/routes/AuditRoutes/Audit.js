@@ -4,22 +4,29 @@ const { QueryTypes } = require("sequelize");
 const db = require("../../models");
 
 router.get("/schema", async (req, res) => {
-    // GET DATABASES
-      const rkyv_db = await db.sequelize.query(`
-      SELECT schema_name FROM information_schema.schemata where schema_name like "rkyv_db%";
-    `, {
+  // GET DATABASES
+  const rkyv_db = await db.sequelize.query(
+    `SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'rkyv_db%';`,
+    {
       type: QueryTypes.SELECT,
-    });
-    // GET USERS
-    const users = await db.sequelize.query(`
+    }
+  );
+  // GET USERS
+  const users = await db.sequelize.query(
+    `SELECT 'ALL' as FULLNAME FROM dual
+    UNION
     SELECT distinct(FULLNAME)
     FROM rkyv_system_db.audits
     JOIN rkyv_system_db.users u ON u.USERNO = rkyv_system_db.audits.USERHANDLE WHERE (u.DELETED is null and u.INACTIVE = false);
-    `, {
+    `,
+    {
       type: QueryTypes.SELECT,
-    });
-    // GET FUNCTION LIST
-    const functionList = await db.sequelize.query(`
+    }
+  );
+  // GET FUNCTION LIST
+  const functionList = await db.sequelize.query(
+    `SELECT 'ALL' as functionname FROM dual
+    UNION
     select distinct functionname 
     from (
 		SELECT FUNCTIONNAME
@@ -28,12 +35,82 @@ router.get("/schema", async (req, res) => {
 		select FUNCTIONNAME
 		from rkyv_db1_db	.audits 
 	) data;;
-    `, {
+    `,
+    {
       type: QueryTypes.SELECT,
-    });
-    res.json({databases: rkyv_db, users: users, functionList: functionList})
+    }
+  );
+  res.json({ databases: rkyv_db, users: users, functionList: functionList });
 });
 
+// GET AUDITS
+router.post("/getAudit", async (req, res) => {
+  const { startDate, endDate, database, user, functionList } = req.body;
+  if (database?.length >= 1) {
+    let username = '';
+    if (user.includes('ALL')) {
+      username = 'AND audit.fullname LIKE "%"';
+    } else if (user.length >= 1) {
+      const userValue = user.map((user) => `'${user}'`).join(',');
+      username = `AND audit.fullname IN (${userValue})`;
+    }
+
+    let functionName = '';
+    if (functionList.includes('ALL')) {
+      functionName = 'AND audit.functionname LIKE "%"';
+    } else if (user.length >= 1) {
+      const funVal = functionList.map((fun) => `'${fun}'`).join(',');
+      functionName = `AND audit.functionname in (${funVal})`;
+    }
+
+    try {
+      const audits = await db.sequelize.query(
+        `
+        SELECT 
+          audit.functionname AS 'Function', 
+          TIMESTAMP(audit.time) as 'FunctionTime',
+          DATE(audit.time) as 'FunctionDate',
+          CASE WHEN audit.DOCUMENT = '' || null THEN 'NO Document' ELSE audit.DOCUMENT END AS 'Document', 
+          CASE WHEN audit.folderpath = '' || null THEN 'NO Folder' ELSE audit.folderpath END AS 'Folder', 
+          CASE WHEN audit.DESCRIPTION = '' || null THEN 'NO Description' ELSE audit.DESCRIPTION END AS 'Description', 
+          audit.db_name as 'Database', 
+          audit.FULLNAME as 'username' 
+        FROM
+        (
+          SELECT FUNCTIONNAME, time, DOCUMENT, FOLDERPATH, FULLNAME, DESCRIPTION, null AS db_name
+          FROM rkyv_system_db.audits
+          JOIN rkyv_system_db.users ON rkyv_system_db.users.USERNO = rkyv_system_db.audits.USERHANDLE
+          UNION 
+          ${database
+            ?.map(
+              (item) =>
+                `SELECT FUNCTIONNAME, time, DOCUMENT, FOLDERPATH, FULLNAME, DESCRIPTION, i.DB_NAME
+                FROM ${item}.audits a
+                INNER JOIN rkyv_system_db.users u ON u.userno = a.USERHANDLE
+                LEFT JOIN ${item}.inf i ON i.DB_No = a.db_name`
+            )
+            .join(" UNION ")}
+        ) audit  
+        WHERE
+        date(audit.time) BETWEEN '${startDate}' AND '${endDate}'
+          ${username}
+          ${functionName}
+        ORDER BY audit.time DESC;
+        `,
+        {
+          type: QueryTypes.SELECT,
+        }
+      );
+
+      res.send(audits);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  } else {
+    res.send("ERROR");
+  }
+});
 
 
 module.exports = router;
