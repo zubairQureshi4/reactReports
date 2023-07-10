@@ -6,24 +6,8 @@ const db = require("../../models");
 router.post("/all", async (req, res) => {
   const { course, salesAgent, startDate, endDate, batch } = req.body;
   try {
-    // FOR SALES AGENT
-    let salesAgentQuery = '';
-    if (salesAgent.includes('ALL')) {
-      salesAgentQuery = 'AND upper(substr(F65, 4)) LIKE "%"';
-    }else if (salesAgent.includes('NO Agent')) {
-      if (salesAgent.length != 1) {
-        const salesAgentValues = salesAgent.map((agent) => `'${agent}'`).join(',');
-        salesAgentQuery = `AND upper(substr(F65, 4)) IN ("", ${salesAgentValues})`;
-      }else{
-
-        salesAgentQuery = `AND upper(substr(F65, 4)) LIKE ""`;
-      }
-    } else  {
-      const salesAgentValues = salesAgent.map((agent) => `'${agent}'`).join(',');
-      salesAgentQuery = `AND upper(substr(F65, 4)) IN (${salesAgentValues})`;
-    }
     // FOR COURSE
-    let courseQuery = '';
+    let courseQuery = 'AND upper(substr(F58, 4)) LIKE "%"';
     if (course.includes('ALL')) {
       courseQuery = 'AND upper(substr(F58, 4)) LIKE "%"';
     }else if (course.includes('NO Course')) {
@@ -39,10 +23,10 @@ router.post("/all", async (req, res) => {
       courseQuery = `AND upper(substr(F58, 4)) IN (${newCourseValues})`;
     }
     // FOR BATCH
-    let batchQuery = '';
+    let batchQuery = 'AND upper(substr(F92, 4)) LIKE "%"';
     if (batch.includes('ALL')) {
       batchQuery = 'AND upper(substr(F92, 4)) LIKE "%"';
-    }else  {
+    }else if(batch.length != 0)  {
         const batchValues = batch.map((batch) => `'${batch}'`).join(',');
         batchQuery = `AND upper(substr(F92, 4)) IN ("", ${batchValues})`;;
     }
@@ -60,7 +44,6 @@ router.post("/all", async (req, res) => {
     AND F92 IS NOT NULL
       AND DATE(substr(F52,4)) BETWEEN "${startDate}" AND "${endDate}"
       ${courseQuery}
-      ${salesAgentQuery}
       ${batchQuery};
     `, {
       type: QueryTypes.SELECT,
@@ -68,7 +51,7 @@ router.post("/all", async (req, res) => {
 
     res.send(int);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -94,7 +77,7 @@ router.get("/salesagent", async (req, res) => {
 
     res.send(options);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -118,7 +101,7 @@ router.get("/courses", async (req, res) => {
 
     res.send(options);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -141,7 +124,7 @@ router.get("/batch", async (req, res) => {
   
       res.send(options);
     } catch (error) {
-      res.json(error);
+      res.status(500).send("Internal Server Error");
     }
   });
 

@@ -7,7 +7,7 @@ router.post("/all", async (req, res) => {
   const { course, salesAgent, startDate, endDate } = req.body;
   try {
     // FOR SALES AGENT
-    let salesAgentQuery = '';
+    let salesAgentQuery = 'AND upper(substr(F65, 4)) LIKE "%"';
     if (salesAgent.includes('ALL')) {
       salesAgentQuery = 'AND upper(substr(F65, 4)) LIKE "%"';
     }else if (salesAgent.includes('NO Agent')) {
@@ -23,7 +23,7 @@ router.post("/all", async (req, res) => {
       salesAgentQuery = `AND upper(substr(F65, 4)) IN (${salesAgentValues})`;
     }
     // FOR COURSE
-    let courseQuery = '';
+    let courseQuery = 'AND upper(substr(F58, 4)) LIKE "%"';
     if (course.includes('ALL')) {
       courseQuery = 'AND upper(substr(F58, 4)) LIKE "%"';
     }else if (course.includes('NO Course')) {
@@ -60,7 +60,7 @@ router.post("/all", async (req, res) => {
 
     res.send(int);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -85,7 +85,8 @@ router.get("/salesagent", async (req, res) => {
 
     res.send(options);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
+
   }
 });
 
@@ -109,7 +110,8 @@ router.get("/courses", async (req, res) => {
 
     res.send(options);
   } catch (error) {
-    res.json(error);
+    res.status(500).send("Internal Server Error");
+
   }
 });
 
