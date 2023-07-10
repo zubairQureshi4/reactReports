@@ -71,8 +71,9 @@ useEffect(() => {
   // Return HTML Code
   return (
     <Form onSubmit={handleSubmit}>
+    <h1 className="text-center mt-3" style={{color: '#0171c3'}}>Course-wise Prospective Trainees Report</h1>
       <Form.Group controlId="startDate">
-        <Form.Label>Start Date</Form.Label>
+        <Form.Label>Enter Start Date</Form.Label>
         <Form.Control
           type="date"
           value={startDate}
@@ -82,7 +83,7 @@ useEffect(() => {
       </Form.Group>
 
       <Form.Group controlId="endDate">
-        <Form.Label>End Date</Form.Label>
+        <Form.Label>Enter End Date</Form.Label>
         <Form.Control
           type="date"
           defaultValue={endDate}
@@ -108,7 +109,7 @@ useEffect(() => {
           setSelectedValues={setSelectedValues}
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" className="mt-3">
         Submit
       </Button>
     </Form>

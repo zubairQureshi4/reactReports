@@ -37,6 +37,26 @@ const FormToGetParameters = ({
   // Return HTML Code
   return (
     <Form onSubmit={handleSubmit}>
+    <h1 className="text-center mt-3" style={{color: '#0171c3'}}>Audit Report</h1>
+    <Form.Group controlId="startDate" className="mt-3">
+        <Form.Label>Enter Start Date</Form.Label>
+        <Form.Control
+          type="date"
+          value={startDate}
+          defaultValue={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group controlId="endDate">
+        <Form.Label>Enter End Date</Form.Label>
+        <Form.Control
+          type="date"
+          defaultValue={endDate}
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+      </Form.Group>
       <Form.Group controlId="Databases">
         <Form.Label>Select Databases</Form.Label>
         <MultiSelectDropdown
@@ -64,26 +84,8 @@ const FormToGetParameters = ({
         />
       </Form.Group>
 
-      <Form.Group controlId="startDate">
-        <Form.Label>Start Date</Form.Label>
-        <Form.Control
-          type="date"
-          value={startDate}
-          defaultValue={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-      </Form.Group>
-
-      <Form.Group controlId="endDate">
-        <Form.Label>End Date</Form.Label>
-        <Form.Control
-          type="date"
-          defaultValue={endDate}
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
-      </Form.Group>
-      <Button variant="primary" type="submit">
+      
+      <Button variant="primary" type="submit" className="mt-3">
         Submit
       </Button>
     </Form>

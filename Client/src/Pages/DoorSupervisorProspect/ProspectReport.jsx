@@ -1,21 +1,25 @@
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
 import FormToGetParameters from "./FormToGetParameters";
 import { Button } from "react-bootstrap";
 import "./Styles/report.css";
 import Pagination from "../DoorSupervisorRegistered/Pagination";
+import ReactToPrint from "react-to-print";
+import BTAlert from "../../Components/Alert";
 
 function ProspectReport() {
   // Show table or Input paramteter form
   const [showTable, setShowTable] = useState(false);
+  const [show, setShow] = useState(false);
   // Show loading state
   const [loading, setLoading] = useState(false);
   // Set Array of data from response.data
   const [data, setData] = useState([]);
+  const [dataLen, setDataLen] = useState(0);
   // Pagination
   const [pageNumber, setPageNumber] = useState(0);
-  const usersPerPage = 10;
+  const usersPerPage = 20;
   const pagesVisited = pageNumber * usersPerPage;
   const pageCount = Math.ceil(data.length / usersPerPage);
   // Pagination end
@@ -45,12 +49,13 @@ function ProspectReport() {
         );
         setData(response.data);
         setLoading(false);
+        setDataLen(response.data.length);
       } catch (error) {
         console.log(error);
       }
     } else {
       setShowTable(false);
-      alert("Enter data");
+      setShow(true);
     }
   };
 // API Call End
@@ -60,9 +65,17 @@ function ProspectReport() {
     event.preventDefault();
     fetchData();
   };
+  let componentRef = useRef();
+
 // Return JSX Code
   return (
     <>
+    {showTable ?
+    <div>
+    <ReactToPrint
+            trigger={() => <Button className="m-2">Print this page</Button>}
+            content={() => componentRef}
+          />
       <Button
         className="m-2"
         onClick={() => {
@@ -71,8 +84,11 @@ function ProspectReport() {
       >
         Open Parameters
       </Button>
+    </div> 
+    : null}
       {!showTable ? (
         <div className="form_div container">
+        {show ? <div className="mt-3"><BTAlert show={show} setShow={setShow}/></div> : null}
           <FormToGetParameters
             setStartDate={setStartDate}
             setEndDate={setEndDate}
@@ -90,6 +106,13 @@ function ProspectReport() {
         <div>
           {!loading ? (
             <div>
+            <div ref={(el) => (componentRef = el)}>
+                <h4 className="text-center" style={{ color: "#0171c3" }}>
+                  Registered Report
+                </h4>
+                <h4 className="text-center" style={{ color: "#0171c3" }}>
+                  Total Records : {dataLen}
+                </h4>
               <Table
                 striped
                 bordered
@@ -126,6 +149,7 @@ function ProspectReport() {
                   </tbody>
                 ) : null}
               </Table>
+                </div>
               <Pagination setPageNumber={setPageNumber} pageCount={pageCount} />
             </div>
           ) : (

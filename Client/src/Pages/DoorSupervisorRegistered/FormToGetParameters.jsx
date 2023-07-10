@@ -86,8 +86,9 @@ console.log(agent);
   // Return HTML Code
   return (
     <Form onSubmit={handleSubmit}>
+    <h1 className="text-center mt-3" style={{color: '#0171c3'}}>Course-wise Registered Trainees Report</h1>
       <Form.Group controlId="startDate">
-        <Form.Label>Start Date</Form.Label>
+        <Form.Label>Enter Start Date</Form.Label>
         <Form.Control
           type="date"
           value={startDate}
@@ -97,7 +98,7 @@ console.log(agent);
       </Form.Group>
 
       <Form.Group controlId="endDate">
-        <Form.Label>End Date</Form.Label>
+        <Form.Label>Enter End Date</Form.Label>
         <Form.Control
           type="date"
           defaultValue={endDate}
@@ -114,15 +115,6 @@ console.log(agent);
           setSelectedValues={setSelectedCourse}
         />
       </Form.Group>
-
-      <Form.Group controlId="2">
-        <Form.Label>Sales Agent</Form.Label>
-        <MultiSelectDropdown
-          agent={agent}
-          selectedValues={selectedValues}
-          setSelectedValues={setSelectedValues}
-        />
-      </Form.Group>
       <Form.Group controlId="3">
         <Form.Label>Batch</Form.Label>
         <MultiSelectDropdown
@@ -131,7 +123,7 @@ console.log(agent);
           setSelectedValues={setBatch}
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" className="mt-3">
         Submit
       </Button>
     </Form>

@@ -1,21 +1,25 @@
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
 import FormToGetParameters from "./FormToGetParameters";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import "./Styles/report.css";
 import Pagination from "./Pagination";
+import ReactToPrint from "react-to-print";
+import BTAlert from "../../Components/Alert";
 
 function RegisteredReport() {
   // Show table or Input paramteter form
   const [showTable, setShowTable] = useState(false);
+  const [show, setShow] = useState(false);
   // Show loading state
   const [loading, setLoading] = useState(false);
   // Set Array of data from response.data
   const [data, setData] = useState([]);
+  const [dataLen, setDataLen] = useState(0);
   // Pagination
   const [pageNumber, setPageNumber] = useState(0);
-  const usersPerPage = 10;
+  const usersPerPage = 2/0;
   const pagesVisited = pageNumber * usersPerPage;
   const pageCount = Math.ceil(data.length / usersPerPage);
   // Pagination end
@@ -29,11 +33,10 @@ function RegisteredReport() {
   const [batch, setBatch] = useState([]);
   // API Call to get Data inside the componenet
   const fetchData = async () => {
-    if (selectedValues.length != 0 && selectedCourse.length != 0) {
+    if (selectedCourse.length != 0 && batch.length != 0)  {
       setShowTable(true);
       try {
         setLoading(true);
-        const values = selectedValues.map(({ value }) => value);
         const courseVal = selectedCourse.map(({ value }) => value);
         const batchVal = batch.map(({value}) => value) 
         const response = await axios.post(
@@ -42,19 +45,18 @@ function RegisteredReport() {
             startDate: startDate,
             endDate: endDate,
             course: courseVal,
-            salesAgent: values,
             batch: batchVal
           }
         );
         setData(response.data);
-        console.log(response);
+        setDataLen(response.data.length);
         setLoading(false);
       } catch (error) {
         console.log(error);
       }
     } else {
       setShowTable(false);
-      alert("Enter data");
+      setShow(true);
     }
   };
 // API Call End
@@ -64,9 +66,17 @@ function RegisteredReport() {
     event.preventDefault();
     fetchData();
   };
+  let componentRef = useRef();
+
 // Return JSX Code
   return (
     <>
+    {showTable ?
+    <div>
+    <ReactToPrint
+            trigger={() => <Button className="m-2">Print this page</Button>}
+            content={() => componentRef}
+          />
       <Button
         className="m-2"
         onClick={() => {
@@ -75,8 +85,11 @@ function RegisteredReport() {
       >
         Open Parameters
       </Button>
+    </div> 
+    : null}
       {!showTable ? (
         <div className="form_div container">
+        {show ? <div className="mt-3"><BTAlert show={show} setShow={setShow}/></div> : null}
           <FormToGetParameters
             setStartDate={setStartDate}
             setEndDate={setEndDate}
@@ -96,6 +109,13 @@ function RegisteredReport() {
         <div>
           {!loading ? (
             <div>
+            <div ref={(el) => (componentRef = el)}>
+                <h4 className="text-center" style={{ color: "#0171c3" }}>
+                  Registered Report
+                </h4>
+                <h4 className="text-center" style={{ color: "#0171c3" }}>
+                  Total Records : {dataLen}
+                </h4>
               <Table
                 striped
                 bordered
@@ -134,10 +154,22 @@ function RegisteredReport() {
                   </tbody>
                 ) : null}
               </Table>
+                </div>
               <Pagination setPageNumber={setPageNumber} pageCount={pageCount} />
             </div>
           ) : (
-            <h1>Loading...</h1>
+            <div
+              className="spinner-container"
+              style={{
+                width: "100%",
+                height: "80vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Spinner animation="border" variant="primary" style={{height: '55px', width: '55px'}}/>
+            </div>
           )}
         </div>
       )}
