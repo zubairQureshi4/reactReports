@@ -19,7 +19,7 @@ function RegisteredReport() {
   const [dataLen, setDataLen] = useState(0);
   // Pagination
   const [pageNumber, setPageNumber] = useState(0);
-  const usersPerPage = 2/0;
+  const usersPerPage = 20;
   const pagesVisited = pageNumber * usersPerPage;
   const pageCount = Math.ceil(data.length / usersPerPage);
   // Pagination end
@@ -60,6 +60,7 @@ function RegisteredReport() {
     }
   };
 // API Call End
+console.log(data);
 
 // Calling API Function onSubmit of Form
   const handleSubmit = (event) => {
