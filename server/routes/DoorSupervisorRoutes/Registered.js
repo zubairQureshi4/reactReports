@@ -31,14 +31,15 @@ router.post("/all", async (req, res) => {
         batchQuery = `AND upper(substr(F92, 4)) IN ("", ${batchValues})`;;
     }
     const int = await db.sequelize.query(`
-    select substr(F54, 4) AS 'Name', 
-    substr(F56, 4) AS 'Contact', 
-    CASE WHEN substr(F58, 4) = '' THEN 'NO Course' ELSE substr(F58, 4) END AS 'Course',
-    substr(F75, 4) AS 'Email', 
-    substr(F92, 4) AS 'Batch',
-    CASE WHEN substr(F65, 4) = '' THEN 'NO Agent' ELSE substr(F65, 4) END AS 'Sales Agent',
-    substr(F83, 4) AS 'Follow Up', 
-    DATE(substr(F52,4)) AS 'Date of Entry' 
+    select 
+    substr(F96, 4) AS 'TraineeID', 
+    substr(F54, 4) AS 'Name',
+     substr(F91, 4) AS 'FeesReceivable', 
+    substr(F56, 4) AS 'Contact',
+    CASE WHEN substr(F58, 4) = '' THEN 'NO Course' ELSE substr(F58, 4) END AS 'CourseTraining',
+    substr(F75, 4) AS 'Email',
+     substr(F92, 4) AS 'batch',
+    DATE(substr(F85,4)) AS 'DateOfAdmission'
     from doc_fields f, doc d
     WHERE d.DOCUMENT_NO = f.DOCUMENT_NO and (d.DELETED != 'y' or d.DELETED is null) AND F54 IS NOT NULL 
     AND F92 IS NOT NULL

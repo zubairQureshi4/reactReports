@@ -39,13 +39,14 @@ router.post("/all", async (req, res) => {
       courseQuery = `AND upper(substr(F58, 4)) IN (${newCourseValues})`;
     }
     const int = await db.sequelize.query(`
-      select substr(F54, 4) AS 'Name', 
-        substr(F56, 4) AS 'Contact', 
-        CASE WHEN substr(F58, 4) = '' THEN 'NO Course' ELSE substr(F58, 4) END AS 'Course',
-        substr(F75, 4) AS 'Email', 
-        CASE WHEN substr(F65, 4) = '' THEN 'NO Agent' ELSE substr(F65, 4) END AS 'Sales Agent',
-        substr(F83, 4) AS 'Follow Up', 
-        DATE(substr(F52,4)) AS 'Date of Entry' 
+    select substr(F84, 4) AS 'EnquiryID', 
+    substr(F54, 4) AS 'Name', 
+    substr(F56, 4) AS 'Contact',
+    substr(F75, 4) AS 'Email',
+    CASE WHEN substr(F58, 4) = '' THEN 'NO Course' ELSE substr(F58, 4) END AS 'CourseTraining',
+    CASE WHEN substr(F65, 4) = '' THEN 'NO Agent' ELSE substr(F65, 4) END AS 'SalesAgent',
+     substr(F83, 4) AS 'FollowUp',
+    DATE(substr(F95,4)) AS 'DateOfEnquiry' 
       from doc_fields f, doc d
       WHERE d.DOCUMENT_NO = f.DOCUMENT_NO 
       AND (d.DELETED != 'y' or d.DELETED is null) 
