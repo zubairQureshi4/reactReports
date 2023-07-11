@@ -112,7 +112,7 @@ console.log(data);
             <div>
             <div ref={(el) => (componentRef = el)}>
                 <h4 className="text-center" style={{ color: "#0171c3" }}>
-                  Registered Report
+                Course-wise Registered Trainees Report
                 </h4>
                 <h4 className="text-center" style={{ color: "#0171c3" }}>
                   Total Records : {dataLen}
@@ -126,13 +126,13 @@ console.log(data);
               >
                 <thead>
                   <tr>
+                    <th>Trainee ID</th>
+                    <th>Date Of Admission</th>
                     <th>Name</th>
+                    <th>FeesReceivable(£)</th>
                     <th>Contact</th>
-                    <th>Course</th>
                     <th>Email</th>
-                    <th>Sales Agent</th>
-                    <th>Follow Up</th>
-                    <th>Date of Entry</th>
+                    <th>Course/ Training</th>
                     <th>Batch</th>
                   </tr>
                 </thead>
@@ -142,14 +142,14 @@ console.log(data);
                       .slice(pagesVisited, pagesVisited + usersPerPage)
                       .map((item, index) => (
                         <tr key={index}>
+                          <td>{item.TraineeID}</td>
+                          <td>{item.DateOfAdmission}</td>
                           <td>{item.Name}</td>
+                          <td>{item.FeesReceivable}</td>
                           <td>{item.Contact}</td>
-                          <td>{item.Course}</td>
                           <td>{item.Email}</td>
-                          <td>{item["Sales Agent"]}</td>
-                          <td>{item["Follow Up"]}</td>
-                          <td>{item["Date of Entry"]}</td>
-                          <td>{item.Batch}</td>
+                          <td>{item.CourseTraining}</td>
+                          <td>{item.batch}</td>
                         </tr>
                       ))}
                   </tbody>

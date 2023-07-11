@@ -23,10 +23,10 @@ function ProspectReport() {
   const pagesVisited = pageNumber * usersPerPage;
   const pageCount = Math.ceil(data.length / usersPerPage);
   // Pagination end
-  const [startDate, setStartDate] = useState(new Date().toJSON().slice(0, 10));
+  const [endDate, setEndDate] = useState(new Date().toJSON().slice(0, 10));
   const currentDate = new Date();
   currentDate.setDate(currentDate.getDate() - 7);
-  const [endDate, setEndDate] = useState(currentDate.toJSON().slice(0, 10));
+  const [startDate, setStartDate] = useState(currentDate.toJSON().slice(0, 10));
   // for parameters
   const [selectedValues, setSelectedValues] = useState([]);
   const [selectedCourse, setselectedCourse] = useState([]);
@@ -108,7 +108,7 @@ function ProspectReport() {
             <div>
             <div ref={(el) => (componentRef = el)}>
                 <h4 className="text-center" style={{ color: "#0171c3" }}>
-                  Registered Report
+                Course-wise Prospective Trainees Report
                 </h4>
                 <h4 className="text-center" style={{ color: "#0171c3" }}>
                   Total Records : {dataLen}
@@ -122,13 +122,14 @@ function ProspectReport() {
               >
                 <thead>
                   <tr>
+                    <th>Enquiry ID</th>
+                    <th>Enquiry Date</th>
                     <th>Name</th>
                     <th>Contact</th>
-                    <th>Course</th>
                     <th>Email</th>
+                    <th>Cource/ Training</th>
                     <th>Sales Agent</th>
-                    <th>Follow Up</th>
-                    <th>Date of Entry</th>
+                    <th>Follow Up Remarks</th>
                   </tr>
                 </thead>
                 {data ? (
@@ -137,13 +138,14 @@ function ProspectReport() {
                       .slice(pagesVisited, pagesVisited + usersPerPage)
                       .map((item, index) => (
                         <tr key={index}>
+                          <td>{item.EnquiryID}</td>
+                          <td>{item.DateOfEnquiry}</td>
                           <td>{item.Name}</td>
                           <td>{item.Contact}</td>
-                          <td>{item.Course}</td>
                           <td>{item.Email}</td>
-                          <td>{item["Sales Agent"]}</td>
-                          <td>{item["Follow Up"]}</td>
-                          <td>{item["Date of Entry"]}</td>
+                          <td>{item.CourseTraining}</td>
+                          <td>{item.SalesAgent}</td>
+                          <td>{item.FollowUp}</td>
                         </tr>
                       ))}
                   </tbody>

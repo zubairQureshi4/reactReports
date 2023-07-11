@@ -9,7 +9,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 function App() {
   return (
     <>
-    <Router>
+    <Router basename={'/app/report'}>
     <Navbar className='background_color' expand="lg" variant="dark">
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
